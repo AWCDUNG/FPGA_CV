@@ -1,0 +1,91 @@
+module LCD_Controller (
+    input wire clk,
+    output reg lcd_rs, lcd_e,
+    output reg [7:0] lcd_db,
+    input wire [15:0] temperature,  // Giá trị nhiệt độ từ cảm biến
+    input wire [15:0] humidity      // Giá trị độ ẩm từ cảm biến
+);
+
+    wire [7:0] temp_int = temperature[15:8];     // Phần nguyên nhiệt độ
+    wire [7:0] temp_double = temperature[7:0];  // Phần thập phân nhiệt độ
+    wire [7:0] hum_int = humidity[15:8];        // Phần nguyên độ ẩm
+    wire [7:0] hum_double = humidity[7:0];      // Phần thập phân độ ẩm
+
+    reg [5:0] state = 0;
+    reg [23:0] counter = 0;
+    reg [7:0] char_array [0:32];
+    reg [4:0] char_index = 0;
+
+ always @(posedge clk) begin
+    // Cập nhật mảng hiển thị nhiệt độ và độ ẩm
+    char_array[0]  = "N"; char_array[1]  = "h"; char_array[2]  = "i";
+    char_array[3]  = "e"; char_array[4]  = "t"; char_array[5]  = " ";
+    char_array[6]  = "d"; char_array[7]  = "o"; char_array[8]  = ":";
+    char_array[9]  = " ";
+    char_array[10] = (temp_int / 10) + 8'h30; // Chữ số hàng chục
+    char_array[11] = (temp_int % 10) + 8'h30; // Chữ số hàng đơn vị
+    char_array[12] = 8'h2E; 
+    char_array[13] = (temp_double / 10) + 8'h30; // Chữ số hàng chục 
+    char_array[14] = (temp_double % 10) + 8'h30; // Chữ số hàng đơn vị 
+    char_array[15] = "C"; 
+    char_array[16] = 8'hC0; // Lệnh di chuyển con trỏ
+    char_array[17] = "D"; char_array[18] = "o"; char_array[19] = " ";
+    char_array[20] = "a"; char_array[21] = "m"; char_array[22] = ":";
+    char_array[23] = " "; 
+    char_array[24] = (hum_int / 10) + 8'h30; // Chữ số hàng chục
+    char_array[25] = (hum_int % 10) + 8'h30; // Chữ số hàng đơn vị
+    char_array[26] = "."; 
+    char_array[27] = (hum_double / 10) + 8'h30; // Chữ số hàng chục 
+    char_array[28] = (hum_double % 10) + 8'h30; // Chữ số hàng đơn vị
+    char_array[29] = "%"; 
+    char_array[30] = " "; // Loại bỏ các ký tự thừa ở cuối
+    char_array[31] = " ";
+    char_array[32] = " ";
+end
+
+
+    always @(posedge clk) begin
+        counter <= counter + 1;
+        if (counter[21]) begin  // Tạo delay
+            case (state)
+                // **Khởi tạo LCD**
+                0: begin lcd_rs <= 0; lcd_db <= 8'h38; lcd_e <= 1; state <= 1; end
+                1: begin lcd_e <= 0; state <= 2; end
+                2: begin lcd_db <= 8'h0C; lcd_e <= 1; state <= 3; end
+                3: begin lcd_e <= 0; state <= 4; end
+                4: begin lcd_db <= 8'h06; lcd_e <= 1; state <= 5; end
+                5: begin lcd_e <= 0; state <= 6; end
+                6: begin lcd_db <= 8'h01; lcd_e <= 1; state <= 7; end  
+                7: begin lcd_e <= 0; state <= 8; end
+
+                // **Hiển thị chuỗi Nhiệt độ trên dòng 1 và Độ ẩm trên dòng 2**
+                8: begin
+                    if (char_index < 33) begin
+						  if (char_array[char_index] == 8'hC0) begin
+									lcd_rs <= 0;  // Lệnh di chuyển con trỏ
+							  end else begin
+									lcd_rs <= 1;  // Hiển thị dữ liệu
+							  end
+							  lcd_db <= char_array[char_index];
+							  lcd_e <= 1;
+                       state <= 9;
+                    end else begin
+                        char_index <= 9;
+                        lcd_rs <= 0;
+                        state <= 30; // Dừng lại
+                    end
+                end
+                9: begin
+                    lcd_e <= 0;
+                    char_index <= char_index + 1;
+                    state <= 8;
+                end
+                
+                30: begin
+                    state <= 30;  // Giữ nguyên
+                end
+            endcase
+            counter <= 0;
+        end
+    end
+endmodule

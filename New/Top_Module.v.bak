@@ -1,0 +1,40 @@
+module Top_Module (
+    input wire clk,
+    input wire rst_n,
+    inout wire dht11,
+    output wire lcd_rs,
+    output wire lcd_e,
+    output wire [7:0] lcd_db,
+    output wire [7:0] led_debug  // Debug dữ liệu lên LED
+);
+
+    wire [31:0] data_valid; // Thêm khai báo này
+    wire [7:0] temperature;
+    wire [7:0] humidity;
+	 
+
+    DHT11_Controller dht11_ctrl (
+        .clk(clk),
+        .rst_n(rst_n),
+        .dht11(dht11),
+        .data_valid(data_valid) // Kết nối đúng tín hiệu
+    );
+
+    assign humidity    = data_valid[31:24];
+    assign temperature = data_valid[15:8];
+
+    LCD_Controller lcd_ctrl (
+        .clk(clk),
+        .reset(rst_n),
+        .temperature(temperature),
+        .humidity(humidity),
+        .lcd_rs(lcd_rs),
+        .lcd_e(lcd_e),
+        .lcd_db(lcd_db)
+    );
+
+    // Xuất dữ liệu nhiệt độ ra LED để kiểm tra
+assign led_debug = data_valid[31:24];
+
+
+endmodule

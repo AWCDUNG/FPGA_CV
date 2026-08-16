@@ -1,0 +1,34 @@
+
+State Machine - |Top_Module|LCD_Controller:lcd_ctrl|state
+Name state.001001 state.001000 state.000111 state.000110 state.000101 state.000100 state.000011 state.000010 state.000001 state.000000 state.011110 
+state.000000 0 0 0 0 0 0 0 0 0 0 0 
+state.000001 0 0 0 0 0 0 0 0 1 1 0 
+state.000010 0 0 0 0 0 0 0 1 0 1 0 
+state.000011 0 0 0 0 0 0 1 0 0 1 0 
+state.000100 0 0 0 0 0 1 0 0 0 1 0 
+state.000101 0 0 0 0 1 0 0 0 0 1 0 
+state.000110 0 0 0 1 0 0 0 0 0 1 0 
+state.000111 0 0 1 0 0 0 0 0 0 1 0 
+state.001000 0 1 0 0 0 0 0 0 0 1 0 
+state.001001 1 0 0 0 0 0 0 0 0 1 0 
+state.011110 0 0 0 0 0 0 0 0 0 1 1 
+
+State Machine - |Top_Module|DHT11_Controller:dht11_ctrl|next_state
+Name next_state.KEEP_DELAY next_state.READ_DATA next_state.READ_HIGH_87US next_state.READ_LOW_83US next_state.CONTROL_HIGH_13US next_state.CONTROL_LOW_20MS next_state.CONTROL_LOW 
+next_state.CONTROL_LOW 0 0 0 0 0 0 0 
+next_state.CONTROL_LOW_20MS 0 0 0 0 0 1 1 
+next_state.CONTROL_HIGH_13US 0 0 0 0 1 0 1 
+next_state.READ_LOW_83US 0 0 0 1 0 0 1 
+next_state.READ_HIGH_87US 0 0 1 0 0 0 1 
+next_state.READ_DATA 0 1 0 0 0 0 1 
+next_state.KEEP_DELAY 1 0 0 0 0 0 1 
+
+State Machine - |Top_Module|DHT11_Controller:dht11_ctrl|cur_state
+Name cur_state.KEEP_DELAY cur_state.READ_DATA cur_state.READ_HIGH_87US cur_state.READ_LOW_83US cur_state.CONTROL_HIGH_13US cur_state.CONTROL_LOW_20MS cur_state.CONTROL_LOW 
+cur_state.CONTROL_LOW 0 0 0 0 0 0 0 
+cur_state.CONTROL_LOW_20MS 0 0 0 0 0 1 1 
+cur_state.CONTROL_HIGH_13US 0 0 0 0 1 0 1 
+cur_state.READ_LOW_83US 0 0 0 1 0 0 1 
+cur_state.READ_HIGH_87US 0 0 1 0 0 0 1 
+cur_state.READ_DATA 0 1 0 0 0 0 1 
+cur_state.KEEP_DELAY 1 0 0 0 0 0 1 
